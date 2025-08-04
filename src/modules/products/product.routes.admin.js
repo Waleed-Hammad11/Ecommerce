@@ -1,5 +1,5 @@
-import express from 'express';
-import { isAdmin } from '../../utilities/middleware/isAdmin.js';
+import express from "express";
+import { isAdmin } from "../../utilities/middleware/isAdmin.js";
 import { addProduct, getAllProducts, updateProduct, deleteProduct, getProductById} from "./product.controller.js";
 
 export const adminProductRoutes = express.Router();

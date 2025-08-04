@@ -1,23 +1,45 @@
 import { cartModel } from "../../../db/models/cart.model.js";
 
-// Add item to cart by use)
 export const addToCart = async (req, res) => {
 try {
     const { productId, quantity } = req.body;
+    const userId = req.decoded.id;
 
-    const cartItem = await cartModel.create({
-    productId,
-    quantity,
-    createdBy: req.user._id
+    const product = await ProductModel.findById(productId);
+    if (!product) {
+    return res.status(404).json({ message: "المنتج غير موجود" });
+    }
+
+    let cart = await cartModel.findOne({ createdBy: userId });
+
+    if (!cart) {
+    const newCart = await cartModel.create({
+        createdBy: userId,
+        items: [{ product: productId, quantity }],
     });
+    return res.status(201).json({ message: "تم إنشاء الكارت", cart: newCart });
+    }
 
-    res.status(201).json({ message: "Item added to cart", cartItem });
-} catch (err) {
-    res.status(500).json({ message: "Failed to add to cart", error: err.message });
+    const foundItem = cart.items.find(
+    (item) => item.product.toString() === productId
+    );
+
+    if (foundItem) {
+    foundItem.quantity += quantity;
+    } else {
+    cart.items.push({ product: productId, quantity });
+    }
+
+    await cart.save();
+
+    res.status(200).json({ message: "تم تحديث الكارت", cart });
+} catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "حصل خطأ داخلي", error });
 }
 };
 
-//for user get my cart 
+
 export const getMyCart = async (req, res) => {
 try {
     const userId = req.user._id;
@@ -30,11 +52,9 @@ try {
 }
 };
 
-// for Admin
 export const getAllCarts = async (req, res) => {
 try {
     const allCartItems = await cartModel.find().populate("productId createdBy");
-
     res.json({ message: "All cart items", carts: allCartItems });
 } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
@@ -42,7 +62,6 @@ try {
 };
 
 
-//for admin 
 export const getCartById = async (req, res) => {
 try {
     const cartItemId = req.params.id;
@@ -84,7 +103,6 @@ try {
 }
 };
 
-// Delete cart item
 export const deleteMyCart = async (req, res) => {
 try {
     const cartItem = await cartModel.findOneAndDelete({
@@ -102,7 +120,6 @@ try {
 }
 };
 
-//for Admin Delete any cart item by ID
 export const adminDeleteCartItem = async (req, res) => {
 try {
     const cartItem = await cartModel.findByIdAndDelete(req.params.id);
