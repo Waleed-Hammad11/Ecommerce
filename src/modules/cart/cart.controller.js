@@ -2,7 +2,8 @@ import { cartModel } from "../../../db/models/cart.model.js";
 
 export const addToCart = async (req, res) => {
 try {
-    const { productId, quantity } = req.body;
+    const productId = req.body.productId;
+    const quantity = req.body.quantity;
     const userId = req.decoded.id;
 
     const product = await ProductModel.findById(productId);
@@ -13,10 +14,7 @@ try {
     let cart = await cartModel.findOne({ createdBy: userId });
 
     if (!cart) {
-    const newCart = await cartModel.create({
-        createdBy: userId,
-        items: [{ product: productId, quantity }],
-    });
+    const newCart = await cartModel.create({createdBy: userId,items: [{ product: productId, quantity }],});
     return res.status(201).json({ message: "cart created", cart: newCart });
     }
 
@@ -82,16 +80,9 @@ try {
 
 export const updateMyCart = async (req, res) => {
 try {
-    const { quantity } = req.body;
-
-    const cartItem = await cartModel.findOneAndUpdate(
-    {
-        _id: req.params.id,
-        createdBy: req.user._id
-    },
-    { quantity },
-    { new: true }
-    );
+    const quantity = req.body.quantity;
+    
+    const cartItem = await cartModel.findOneAndUpdate({_id: req.params.id,createdBy: req.user._id},{ quantity },{ new: true });
 
     if (!cartItem) {
     return res.status(404).json({ message: "Cart item not found or unauthorized" });
@@ -105,11 +96,7 @@ try {
 
 export const deleteMyCart = async (req, res) => {
 try {
-    const cartItem = await cartModel.findOneAndDelete({
-    _id: req.params.id,
-    createdBy: req.user._id
-    });
-
+    const cartItem = await cartModel.findOneAndDelete({_id: req.params.id,createdBy: req.user._id})
     if (!cartItem) {
     return res.status(404).json({ message: "Cart item not found or unauthorized" });
     }

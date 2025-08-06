@@ -1,4 +1,3 @@
-// src/modules/user/user.routes.js
 import express from "express";
 import {registerUser, verifyAccount, loginUser} from "./user.controller.js";
 import { checkEmail } from "../../utilities/middleware/checkEmail.js";

@@ -9,6 +9,7 @@ try {
 }
 };
 
+
 export const getProductById = async (req, res) => {
 try {
     const product = await productModel.findById(req.params.id);
@@ -21,6 +22,7 @@ try {
 }
 };
 
+
 export const addProduct = async (req, res) => {
 try {
     const newProduct = await productModel.create(req.body);
@@ -30,23 +32,22 @@ try {
 }
 };
 
+
 export const updateProduct = async (req, res) => {
 try {
-    const updated = await productModel.findByIdAndUpdate(
-    req.params.id,
-    req.body,
-    { new: true } // return the updated document
-    );
+    const updated = await productModel.findByIdAndUpdate(req.params.id,req.body,{ new: true });
 
     if (!updated) {
-    return res.status(404).json({ message: "Product not found" });
-    }
+        return res.status(404).json({ message: "Product not found" });
+}
 
     res.json({ message: "Product updated", data: updated });
 } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
 }
 };
+
+
 
 export const deleteProduct = async (req, res) => {
 try {
