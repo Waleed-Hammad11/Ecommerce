@@ -7,7 +7,7 @@ try {
 
     const product = await ProductModel.findById(productId);
     if (!product) {
-    return res.status(404).json({ message: "المنتج غير موجود" });
+    return res.status(404).json({ message: "cart not found" });
     }
 
     let cart = await cartModel.findOne({ createdBy: userId });
@@ -17,7 +17,7 @@ try {
         createdBy: userId,
         items: [{ product: productId, quantity }],
     });
-    return res.status(201).json({ message: "تم إنشاء الكارت", cart: newCart });
+    return res.status(201).json({ message: "cart created", cart: newCart });
     }
 
     const foundItem = cart.items.find(
@@ -32,10 +32,10 @@ try {
 
     await cart.save();
 
-    res.status(200).json({ message: "تم تحديث الكارت", cart });
+    res.status(200).json({ message: "cart updated : ", cart });
 } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "حصل خطأ داخلي", error });
+    res.status(500).json({ message: "server error", error });
 }
 };
 
