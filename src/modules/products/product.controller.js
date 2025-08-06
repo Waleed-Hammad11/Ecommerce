@@ -63,3 +63,21 @@ try {
     res.status(500).json({ message: "Server error", error: error.message });
 }
 };
+
+
+
+export const createProductImg = (req, res) => {
+try {
+    if (!req.files || req.files.length === 0) {
+        return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    const uploadedFile = req.files[0];
+    return res.status(200).json({ message: "Upload successful ",  fileInfo: uploadedFile});
+} catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Server error", error: error.message });
+}
+};
+
+

@@ -9,12 +9,13 @@ import { adminCartRoutes } from "./src/modules/cart/cart.routes.admin.js";
 
 dbConnection
 
-const app = express();
+const app = express()
 app.use(express.json());
 
 app.use("/admin", adminRoutes);
 app.use("/admin/products", adminProductRoutes);
 app.use("/admin/cart", adminCartRoutes);
+app.use("/admin", express.static("uploads"),adminProductRoutes);
 
 app.use("/user", userRoutes);
 app.use("/user/products", userProductRoutes);
