@@ -4,11 +4,10 @@ import { addProduct, getAllProducts, updateProduct, deleteProduct, getProductByI
 import { verifyToken } from "../../utilities/middleware/verifyToken.js";
 export const adminProductRoutes = express.Router();
 
-adminProductRoutes.use(verifyToken, isAdmin);
 
 
-adminProductRoutes.post("/add", addProduct);
-adminProductRoutes.put("/update/:id", updateProduct);
-adminProductRoutes.delete("/delete/:id", deleteProduct);
-adminProductRoutes.get("/getAll", getAllProducts);
+adminProductRoutes.post("/add",verifyToken, isAdmin, addProduct);
+adminProductRoutes.put("/update/:id",verifyToken, isAdmin, updateProduct);
+adminProductRoutes.delete("/delete/:id",verifyToken, isAdmin, deleteProduct);
+adminProductRoutes.get("/", getAllProducts);
 adminProductRoutes.get("/:id", getProductById);

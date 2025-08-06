@@ -10,6 +10,7 @@ try {
 };
 
 
+
 export const getProductById = async (req, res) => {
 try {
     const product = await productModel.findById(req.params.id);
@@ -25,7 +26,7 @@ try {
 
 export const addProduct = async (req, res) => {
 try {
-    const newProduct = await productModel.create(req.body);
+    const newProduct = await productModel.create({...req.body,createdBy: req.decoded._id});
     res.status(201).json({ message: "Product added", data: newProduct });
 } catch (error) {
     res.status(400).json({ message: "Invalid data", error: error.message });
