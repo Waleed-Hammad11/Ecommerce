@@ -29,9 +29,7 @@ try {
     return res.status(201).json({ message: "Cart created", cart: populatedNewCart });
     }
 
-    const foundItem = cart.products.find(
-    item => item.productId.toString() === productId
-    );
+    const foundItem = cart.products.find(item => item.productId.toString() === productId);
 
     if (foundItem) {
     foundItem.quantity += quantity;

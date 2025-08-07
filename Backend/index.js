@@ -6,10 +6,13 @@ import { userProductRoutes } from "./src/modules/products/product.routes.user.js
 import { adminProductRoutes } from "./src/modules/products/product.routes.admin.js";
 import { userCartRoutes } from "./src/modules/cart/cart.routes.user.js";
 import { adminCartRoutes } from "./src/modules/cart/cart.routes.admin.js";
+import cors from "cors"
 
 dbConnection
 
 const app = express()
+app.use(cors());
+
 app.use(express.json());
 
 app.use("/admin", adminRoutes);
