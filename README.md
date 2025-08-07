@@ -2,46 +2,49 @@
 ```md
 # 🛒 Full Stack E-Commerce App
 
-A modern, full-featured E-Commerce web application built using **Angular** for the frontend and **Node.js + Express + MongoDB** for the backend. It supports user and admin roles, authentication, image uploads, JWT-protected routes, and modular API design.
+A modern, full-featured **E-Commerce** web application built using **Angular** for the frontend and **Node.js + Express + MongoDB** for the backend.
+
+It supports **user and admin roles**, **authentication**, **image uploads**, **JWT-protected routes**, and **modular API design**.
+
 ---
 
 ## ✨ Features
 
 ### 👤 User
 - Sign up with email verification
-- JWT-based login
-- Add/remove items to/from cart
-- Browse products with image support
+- JWT-based secure login
+- Browse products with images
+- Add or remove items from the cart
 
 ### 🛠️ Admin
-- Separate admin login
-- Full control over users, products, and carts
-- Access to all CRUD operations
+- Dedicated admin login
+- Full CRUD access to users, products, and carts
+- Admin dashboard integration ready
 
 ### 🌐 General
-- Protected routes for both user and admin
-- Modular route architecture (User vs Admin separation)
-- Multer-powered image uploads
-- Email sending with Nodemailer & JWT links
-- MongoDB + Mongoose schema design
+- Protected routes for users & admins
+- Multer for image uploads
+- Nodemailer for sending emails with JWT
+- MongoDB + Mongoose schema management
+- Scalable modular folder architecture
 
 ---
 
 ## 🧱 Tech Stack
 
-| Frontend     | Backend          | DB         | Auth        | Utilities      |
-|--------------|------------------|------------|-------------|----------------|
-| Angular      | Node.js + Express| MongoDB    | JWT         | Multer         |
-| TypeScript   | Mongoose         | Compass    | bcrypt      | Nodemailer     |
+| Frontend     | Backend           | Database   | Auth        | Utilities      |
+|--------------|-------------------|------------|-------------|----------------|
+| Angular      | Node.js + Express | MongoDB    | JWT         | Multer         |
+| TypeScript   | Mongoose          | Compass    | bcrypt      | Nodemailer     |
 
 ---
 
 ## 📁 Folder Structure
 
-```
+``` Strructure
 
 📦 project-root
-├── db
+├── db/
 │   ├── db.connection.js
 │   └── models/
 │       ├── user.model.js
@@ -65,14 +68,14 @@ A modern, full-featured E-Commerce web application built using **Angular** for t
 ├── uploads/
 ├── index.js
 └── README.md
-
 ````
 
 ---
 
 ## ⚙️ How to Run Locally
 
-### 1️⃣ Backend Setup
+### 🔧 Backend Setup
+
 ```bash
 # Clone the repo
 git clone https://github.com/your-username/ecommerce-app.git
@@ -81,28 +84,36 @@ cd ecommerce-app
 # Install dependencies
 npm install
 
-# Configure MongoDB URI and Email creds in .env
+# Create .env file
 touch .env
-# Add:
-# DB_URI=mongodb://localhost:27017/your-db-name
-# JWT_SECRET=your_jwt_secret
-# EMAIL_USER=your_email
-# EMAIL_PASS=your_pass
-
-# Run server
-node index.js
 ````
 
-### 2️⃣ Frontend Setup
+Add to `.env`:
+
+```env
+DB_URI=mongodb://localhost:27017/ecommerce-db
+JWT_SECRET=your_jwt_secret
+EMAIL_USER=your_email@example.com
+EMAIL_PASS=your_password
+```
 
 ```bash
-# Navigate to Angular app
+# Start the backend server
+node index.js
+```
+
+---
+
+### 💻 Frontend Setup
+
+```bash
+# Navigate to Angular frontend
 cd frontend
 
 # Install Angular dependencies
 npm install
 
-# Serve the app
+# Run the Angular dev server
 ng serve
 ```
 
@@ -110,10 +121,10 @@ ng serve
 
 ## 🔐 Authentication Flow
 
-1. User registers
-2. Email sent with verification link (using JWT)
-3. After confirmation, user logs in and receives access token
-4. All sensitive routes protected using `verifyToken` and `isAdmin` middleware
+1. User registers from the frontend.
+2. An email is sent with a verification link using JWT.
+3. Once confirmed, user can log in.
+4. All secure routes are protected using middleware like `verifyToken` and `isAdmin`.
 
 ---
 
@@ -139,14 +150,18 @@ ng serve
 
 ## 📧 Contact
 
-Made with ❤️ by [Waleed](www.linkedin.com/in/waleed-hammad-26890221a)
+Made with ❤️ by **Waleed**
 
-For support, email: **[MY Mail](mailto:waleedhammadmohammed@gmail.com)**
+For support or inquiries, email: **[My Mail](mailto:waleedhammadmohammed@gmail.com)**
 
 ---
 
 ## 🌟 Give it a Star
 
-If you like this project, don’t forget to ⭐ it on GitHub!
+If you found this project helpful or interesting, please consider giving it a ⭐ on GitHub!
 
-```
+---
+
+### 📌 Note
+
+Feel free to fork, contribute, or raise an issue.
