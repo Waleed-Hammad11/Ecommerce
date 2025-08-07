@@ -1,5 +1,3 @@
-
-```md
 # 🛒 Full Stack E-Commerce App
 
 A modern, full-featured **E-Commerce** web application built using **Angular** for the frontend and **Node.js + Express + MongoDB** for the backend.
