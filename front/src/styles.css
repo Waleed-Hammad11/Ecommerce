@@ -1,0 +1,6 @@
+.activeClass {
+    background-color: rebeccapurple;
+    color: white !important;
+    padding: 6px 12px;
+    border-radius: 5px;
+}

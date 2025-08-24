@@ -1,0 +1,16 @@
+<div class="container py-5">
+<div class="row">
+    @for (product of products; track product) {
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow rounded-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{ product.title }}</h5>
+                    <p class="card-text">{{ product.description }}</p>
+                    <p class="card-text"><strong>Price:</strong> {{ product.price}}</p>
+                    <p class="card-text"><strong>Quantity:</strong> {{ product.quantity }}</p>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+</div>
