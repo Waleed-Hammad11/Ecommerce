@@ -1,0 +1,183 @@
+<div class="container py-5">
+  <header class="text-center mb-5 mt-4" id="admin-form-anchor">
+    <h1 class="display-4 fw-bold text-gradient mb-2">Admin Dashboard</h1>
+    <p class="fs-5 text-muted">Manage your store's inventory: create, edit, or delete items.</p>
+  </header>
+
+  <!-- Error Alerts -->
+  @if (errorMessage) {
+    <div class="glass-alert mb-4 d-flex justify-content-between align-items-center">
+      <span>{{ errorMessage }}</span>
+      <button class="btn-close btn-close-white" (click)="errorMessage = ''"></button>
+    </div>
+  }
+
+  <!-- Success Alerts -->
+  @if (successMessage) {
+    <div class="glass-alert mb-4 d-flex justify-content-between align-items-center" style="background: rgba(143, 95, 232, 0.1); border-color: rgba(143, 95, 232, 0.2);">
+      <span>{{ successMessage }}</span>
+      <button class="btn-close btn-close-white" (click)="successMessage = ''"></button>
+    </div>
+  }
+
+  <div class="row g-5">
+    <!-- Form Section (Create / Edit) -->
+    <div class="col-lg-5">
+      <div class="card glass-panel p-4 rounded-4 border-0">
+        <h3 class="fw-bold text-gradient mb-4">
+          {{ isEditing ? 'Edit Product' : 'Add New Product' }}
+        </h3>
+
+        <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+          <!-- Title -->
+          <div class="mb-3">
+            <label for="product-title" class="form-label fw-medium text-light opacity-75">Product Title</label>
+            <input type="text" formControlName="title" id="product-title" class="form-control glass-input"
+              placeholder="e.g. Premium Purple Hoodie">
+            @if (productForm.get('title')?.touched && productForm.get('title')?.invalid) {
+              <div class="text-danger fs-8 mt-1">Title is required (minimum 2 chars).</div>
+            }
+          </div>
+
+          <!-- Description -->
+          <div class="mb-3">
+            <label for="product-desc" class="form-label fw-medium text-light opacity-75">Description</label>
+            <textarea formControlName="description" id="product-desc" class="form-control glass-input" rows="3"
+              placeholder="Detailed description of the product..."></textarea>
+            @if (productForm.get('description')?.touched && productForm.get('description')?.invalid) {
+              <div class="text-danger fs-8 mt-1">Description is required (minimum 10 chars).</div>
+            }
+          </div>
+
+          <div class="row">
+            <!-- Price -->
+            <div class="col-6 mb-3">
+              <label for="product-price" class="form-label fw-medium text-light opacity-75">Price ($)</label>
+              <input type="number" formControlName="price" id="product-price" class="form-control glass-input" step="0.01"
+                placeholder="19.99">
+              @if (productForm.get('price')?.touched && productForm.get('price')?.invalid) {
+                <div class="text-danger fs-8 mt-1">Price must be > 0.</div>
+              }
+            </div>
+
+            <!-- Quantity -->
+            <div class="col-6 mb-3">
+              <label for="product-qty" class="form-label fw-medium text-light opacity-75">Quantity</label>
+              <input type="number" formControlName="quantity" id="product-qty" class="form-control glass-input"
+                placeholder="100">
+              @if (productForm.get('quantity')?.touched && productForm.get('quantity')?.invalid) {
+                <div class="text-danger fs-8 mt-1">Stock must be >= 0.</div>
+              }
+            </div>
+          </div>
+
+          <!-- Product Image -->
+          <div class="mb-4">
+            <label for="product-image" class="form-label fw-medium text-light opacity-75">
+              {{ isEditing ? 'Change Image (Optional)' : 'Product Image' }}
+            </label>
+            <input type="file" id="product-image" class="form-control glass-input" accept="image/*"
+              (change)="onFileSelected($event)">
+          </div>
+
+          <!-- Submit & Cancel Buttons -->
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-premium-primary flex-grow-1" [disabled]="loading">
+              {{ loading ? 'Saving...' : (isEditing ? 'Update Product' : 'Add Product') }}
+            </button>
+            <button type="button" class="btn btn-premium-secondary" (click)="resetForm()" [disabled]="loading">
+              Reset
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Products List Section -->
+    <div class="col-lg-7">
+      <div class="glass-panel p-4 rounded-4">
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-purple-muted">
+          <h3 class="fw-bold text-light mb-0">Product Catalog</h3>
+          <span class="badge rounded-pill bg-premium-primary text-light px-3 py-2 fs-8">
+            Total: {{ products.length }}
+          </span>
+        </div>
+
+        @if (loading && products.length === 0) {
+          <div class="text-center py-5">
+            <div class="spinner-border text-gradient" style="width: 2.5rem; height: 2.5rem;" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="text-muted mt-3">Fetching products...</p>
+          </div>
+        } @else {
+          <div class="table-responsive">
+            <table class="table table-dark table-borderless align-middle mb-0" style="background: transparent;">
+              <thead>
+                <tr class="text-muted fs-7 text-uppercase border-bottom border-purple-muted">
+                  <th scope="col" style="background: transparent;">Item Info</th>
+                  <th scope="col" style="background: transparent;" class="text-end">Price</th>
+                  <th scope="col" style="background: transparent;" class="text-center">Stock</th>
+                  <th scope="col" style="background: transparent;" class="text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (prod of products; track prod._id) {
+                  <tr class="border-bottom border-purple-muted-light">
+                    <!-- Info -->
+                    <td style="background: transparent;">
+                      <div class="d-flex align-items-center">
+                        <div class="cart-img-wrapper rounded-3 overflow-hidden me-3 border border-purple-muted bg-dark" style="width: 50px; height: 50px;">
+                          @if (prod.image) {
+                            <img [src]="'http://localhost:3000/uploads/' + prod.image" [alt]="prod.title" class="w-100 h-100 object-fit-cover">
+                          } @else {
+                            <div class="w-100 h-100 d-flex align-items-center justify-content-center text-muted fs-8">No Pic</div>
+                          }
+                        </div>
+                        <div style="max-width: 180px;">
+                          <h6 class="fw-bold text-light mb-0 text-truncate">{{ prod.title }}</h6>
+                          <p class="text-muted fs-8 mb-0 text-truncate">{{ prod.description }}</p>
+                        </div>
+                      </div>
+                    </td>
+
+                    <!-- Price -->
+                    <td style="background: transparent;" class="text-end fw-medium text-light">
+                      ${{ prod.price }}
+                    </td>
+
+                    <!-- Stock -->
+                    <td style="background: transparent;" class="text-center">
+                      <span class="badge px-3 py-2 rounded-pill" [ngClass]="prod.quantity > 0 ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'">
+                        {{ prod.quantity }}
+                      </span>
+                    </td>
+
+                    <!-- Edit / Delete -->
+                    <td style="background: transparent;" class="text-center">
+                      <div class="d-inline-flex gap-2">
+                        <button class="btn btn-sm btn-link text-primary border-0 p-0" (click)="editProduct(prod)">
+                          Edit
+                        </button>
+                        <span class="text-muted opacity-50">|</span>
+                        <button class="btn btn-sm btn-link text-danger border-0 p-0" (click)="deleteProduct(prod._id)">
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="4" class="text-center py-5 text-muted">
+                      No products found. Add your first item using the dashboard form!
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

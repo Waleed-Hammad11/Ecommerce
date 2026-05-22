@@ -16,7 +16,13 @@ const POPULATE_OPTIONS = [
   },
 ];
 
-const buildImageUrl = (filename) => (filename ? `${env.backendUrl}/uploads/${filename}` : null);
+const buildImageUrl = (filename) => {
+  if (!filename) return null;
+  if (filename.startsWith('http://') || filename.startsWith('https://')) {
+    return filename;
+  }
+  return `${env.backendUrl}/uploads/${filename}`;
+};
 
 // Format cart for API response — add imageUrls
 const formatCart = (cart) => {

@@ -6,6 +6,9 @@ import { env } from '../../config/env.js';
 // Build full image URL from stored filename
 const buildImageUrl = (filename) => {
   if (!filename) return null;
+  if (filename.startsWith('http://') || filename.startsWith('https://')) {
+    return filename;
+  }
   return `${env.backendUrl}/uploads/${filename}`;
 };
 

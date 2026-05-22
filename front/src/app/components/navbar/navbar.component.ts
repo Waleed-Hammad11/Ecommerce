@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Component } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -8,26 +8,20 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css'
 })
-export class NavbarComponent implements OnInit{
-constructor(private auth:AuthService){}
+export class NavbarComponent {
+  constructor(private auth: AuthService, private router: Router) {}
 
-isLoggedIn =true;
-
-  isLogin(){
-    let token = localStorage.getItem("token")
-    if(token){
-    this.isLoggedIn= true
-    }else{
-      this.isLoggedIn=false
-    }
-    
+  get isLoggedIn(): boolean {
+    return this.auth.isLoggedIn();
   }
 
-
-  ngOnInit(): void {
-    this.isLogin()
-    console.log(this.isLoggedIn);
-    
+  get isAdmin(): boolean {
+    const user = this.auth.getCurrentUser();
+    return user?.role === 'admin';
   }
-  
+
+  logout(): void {
+    this.auth.logout();
+    this.router.navigate(['/login']);
+  }
 }

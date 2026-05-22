@@ -1,3 +1,58 @@
-.bg-purple {
-  background-color: #6f42c1 !important;
+.main-navbar {
+  background: rgba(10, 6, 24, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 15px 0;
+  transition: all 0.3s ease;
+}
+
+.brand-gradient {
+  background: linear-gradient(135deg, #ffffff 40%, var(--color-primary), var(--color-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.5px;
+}
+
+.nav-link {
+  font-weight: 500;
+  color: var(--color-text-muted) !important;
+  transition: var(--transition-smooth);
+}
+
+.nav-link:hover {
+  color: var(--color-text-main) !important;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.custom-toggler {
+  border: 1px solid var(--glass-border);
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.custom-toggler:focus {
+  box-shadow: 0 0 0 3px rgba(143, 95, 232, 0.25);
+  outline: none;
+}
+
+.custom-toggler .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28159, 151, 189, 0.75%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+}
+
+@media (max-width: 991.98px) {
+  .navbar-collapse {
+    background: var(--bg-secondary);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 20px;
+    margin-top: 15px;
+    box-shadow: var(--shadow-main);
+  }
+  .navbar-nav {
+    align-items: stretch !important;
+    text-align: center;
+  }
 }

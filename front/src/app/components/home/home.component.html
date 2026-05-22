@@ -1,6 +1,152 @@
-<section class="home-hero">
-    <div class="home-overlay">
-        <h1>Welcome to Purple Store</h1>
-        <p>Find your perfect products with elegance!</p>
+<div class="home-container">
+  <!-- Decorative Ambient Glow Background Shapes -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+  <div class="ambient-glow glow-3"></div>
+
+  <!-- Hero Section -->
+  <section class="home-hero d-flex align-items-center justify-content-center">
+    <div class="container text-center">
+      <div class="hero-card glass-panel mx-auto p-5">
+        <h1 class="display-3 fw-extrabold text-gradient mb-3">Purple Store</h1>
+        <p class="lead fs-4 text-purple-light mb-4">Discover curated luxury items and premium products styled for the modern web.</p>
+        
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+          <a routerLink="/products" class="btn btn-premium-primary rounded-pill px-5 py-3 fs-5">
+            Browse Products
+          </a>
+          <a routerLink="/signup" class="btn btn-premium-secondary rounded-pill px-5 py-3 fs-5">
+            Create Account
+          </a>
+        </div>
+      </div>
     </div>
-</section>
+  </section>
+
+  <!-- Featured Showcase Section -->
+  <section class="featured-showcase py-5">
+    <div class="container">
+      <header class="text-center mb-5">
+        <h2 class="display-5 fw-bold text-gradient-alt mb-2">Featured Collections</h2>
+        <p class="fs-5 text-purple-light">Explore a premium selection of our most desired luxury items.</p>
+      </header>
+
+      <!-- Alerts -->
+      @if (errorMessage) {
+        <div class="glass-alert mb-4 d-flex justify-content-between align-items-center">
+          <span>{{ errorMessage }}</span>
+          <button class="btn-close btn-close-white" (click)="errorMessage = ''"></button>
+        </div>
+      }
+
+      @if (successMessage) {
+        <div class="glass-alert mb-4 d-flex justify-content-between align-items-center" style="background: rgba(143, 95, 232, 0.1); border-color: rgba(143, 95, 232, 0.2);">
+          <span>{{ successMessage }}</span>
+          <button class="btn-close btn-close-white" (click)="successMessage = ''"></button>
+        </div>
+      }
+
+      <!-- Loading / Products State -->
+      @if (loading && products.length === 0) {
+        <div class="row justify-content-center">
+          @for (skeleton of [1, 2, 3]; track $index) {
+            <div class="col-lg-4 col-md-6 mb-4">
+              <div class="card h-100 product-card glass-panel border-0 overflow-hidden skeleton-card">
+                <div class="skeleton-image-container"></div>
+                <div class="card-body p-4 d-flex flex-column gap-3">
+                  <div class="skeleton-title"></div>
+                  <div class="skeleton-description"></div>
+                  <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top border-purple-muted">
+                    <div class="skeleton-stock"></div>
+                    <div class="skeleton-btn"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="row justify-content-center">
+          @for (product of products; track product._id) {
+            <div class="col-lg-4 col-md-6 mb-4 d-flex">
+              <div class="card h-100 product-card glass-panel border-0 overflow-hidden d-flex flex-column w-100">
+                <div class="product-image-container position-relative">
+                  <img [src]="product.imageUrl || (product.image && product.image.startsWith('http') ? product.image : 'http://localhost:3000/uploads/' + product.image)" 
+                       (error)="handleImageError($event)"
+                       [alt]="product.title" 
+                       class="product-image">
+                  <span class="badge price-badge px-3 py-2 fs-6 rounded-pill position-absolute top-0 end-0 m-3 shadow">
+                    ${{ product.price }}
+                  </span>
+                </div>
+
+                <div class="card-body p-4 d-flex flex-column justify-content-between flex-grow-1">
+                  <div>
+                    <h5 class="card-title fw-bold text-light mb-2 fs-5">{{ product.title }}</h5>
+                    <p class="card-text text-muted-custom mb-4 fs-6 leading-relaxed">{{ product.description }}</p>
+                  </div>
+                  
+                  <div class="pt-3 border-top border-purple-muted d-flex justify-content-between align-items-center mt-auto">
+                    <span class="text-muted-custom fs-7">Stock: <strong class="text-light">{{ product.quantity }}</strong></span>
+                    <button class="btn btn-premium-primary rounded-pill px-4 py-2 text-decoration-none" [disabled]="product.quantity <= 0" (click)="addToCart(product._id)">
+                      Add to Cart
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          } @empty {
+            <!-- Beautiful Offline Fallback Showcase with Premium Styling -->
+            <div class="col-12 text-center py-5">
+              <div class="glass-panel p-5 max-width-600 mx-auto rounded-4 shadow-lg border border-purple-muted">
+                <h3 class="text-gradient fw-bold mb-3">Exquisite Arrivals Coming Soon</h3>
+                <p class="text-muted-custom fs-5 mb-4">Our high-end inventory is being curated. Check back in a moment or explore our full products directory below.</p>
+                <a routerLink="/products" class="btn btn-premium-primary rounded-pill px-4 py-2">
+                  Explore Catalog
+                </a>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </section>
+</div>
+
+<!-- Center Success Popup Modal -->
+@if (showSuccessModal && addedProduct) {
+  <div class="modal-backdrop-blur" (click)="showSuccessModal = false">
+    <div class="success-modal-card glass-panel p-4 text-center" (click)="$event.stopPropagation()">
+      <div class="success-icon-container mb-3 mx-auto">
+        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="animate-check">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+      
+      <h4 class="text-gradient fw-bold mb-2">Item Added</h4>
+      <p class="text-muted-custom mb-4">Product added to cart successfully</p>
+      
+      <!-- Product Preview Box -->
+      <div class="product-preview-box p-3 mb-4 d-flex align-items-center gap-3 text-start">
+        <img [src]="addedProduct.imageUrl || (addedProduct.image && addedProduct.image.startsWith('http') ? addedProduct.image : 'http://localhost:3000/uploads/' + addedProduct.image)"
+             (error)="handleImageError($event)"
+             [alt]="addedProduct.title" 
+             class="preview-img rounded">
+        <div class="flex-grow-1 min-width-0">
+          <h6 class="text-light fw-bold mb-1 text-truncate">{{ addedProduct.title }}</h6>
+          <span class="badge price-badge">${{ addedProduct.price }}</span>
+        </div>
+      </div>
+      
+      <!-- Actions Buttons -->
+      <div class="d-flex flex-column gap-2">
+        <a routerLink="/cart" class="btn btn-premium-primary rounded-pill w-100 py-3 d-flex align-items-center justify-content-center gap-2" (click)="showSuccessModal = false">
+          Go to Cart
+        </a>
+        <button class="btn btn-premium-secondary rounded-pill w-100 py-3" (click)="showSuccessModal = false">
+          Continue Shopping
+        </button>
+      </div>
+    </div>
+  </div>
+}

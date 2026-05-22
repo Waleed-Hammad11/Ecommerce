@@ -1,0 +1,164 @@
+<div class="container py-5">
+  <header class="text-center mb-5 mt-4">
+    <h1 class="display-4 fw-bold text-gradient mb-2">My Shopping Cart</h1>
+    <p class="fs-5 text-muted">Review your selected items and adjust their quantities.</p>
+  </header>
+
+  <!-- Error Alerts -->
+  @if (errorMessage) {
+    <div class="glass-alert mb-4 d-flex justify-content-between align-items-center">
+      <span>{{ errorMessage }}</span>
+      <button class="btn-close btn-close-white" (click)="errorMessage = ''"></button>
+    </div>
+  }
+
+  <!-- Success Alerts -->
+  @if (successMessage) {
+    <div class="glass-alert mb-4 d-flex justify-content-between align-items-center" style="background: rgba(143, 95, 232, 0.1); border-color: rgba(143, 95, 232, 0.2);">
+      <span>{{ successMessage }}</span>
+      <button class="btn-close btn-close-white" (click)="successMessage = ''"></button>
+    </div>
+  }
+
+  <!-- Loading State -->
+  @if (loading && !cart) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-gradient" style="width: 3rem; height: 3rem;" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="text-muted mt-3">Fetching your cart details...</p>
+    </div>
+  } @else {
+    @if (cart && cart.products && cart.products.length > 0) {
+      <div class="row g-4">
+        <!-- Cart Items List -->
+        <div class="col-lg-8">
+          <div class="glass-panel p-4 rounded-4">
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-purple-muted">
+              <h3 class="fw-bold text-light mb-0">Items ({{ cart.itemCount }})</h3>
+              <button class="btn btn-sm btn-outline-danger rounded-pill px-3" (click)="clearCart()">
+                Clear Cart
+              </button>
+            </div>
+
+            <div class="table-responsive">
+              <table class="table table-dark table-borderless align-middle mb-0" style="background: transparent;">
+                <thead>
+                  <tr class="text-muted fs-7 text-uppercase border-bottom border-purple-muted">
+                    <th scope="col" style="background: transparent;">Product</th>
+                    <th scope="col" style="background: transparent;" class="text-center">Quantity</th>
+                    <th scope="col" style="background: transparent;" class="text-end">Price</th>
+                    <th scope="col" style="background: transparent;" class="text-end">Total</th>
+                    <th scope="col" style="background: transparent;" class="text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (item of cart.products; track item.productId._id || item._id) {
+                    <tr class="border-bottom border-purple-muted-light">
+                      <!-- Product Info -->
+                      <td style="background: transparent; min-width: 250px;">
+                        <div class="d-flex align-items-center">
+                          <div class="cart-img-wrapper rounded-3 overflow-hidden me-3 border border-purple-muted bg-dark" style="width: 60px; height: 60px;">
+                            @if (item.productId.imageUrl) {
+                              <img [src]="item.productId.imageUrl" [alt]="item.productId.title" class="w-100 h-100 object-fit-cover">
+                            } @else if (item.productId.image) {
+                              <img [src]="'http://localhost:3000/uploads/' + item.productId.image" [alt]="item.productId.title" class="w-100 h-100 object-fit-cover">
+                            } @else {
+                              <div class="w-100 h-100 d-flex align-items-center justify-content-center text-muted fs-8">No Pic</div>
+                            }
+                          </div>
+                          <div>
+                            <h6 class="fw-bold text-light mb-0">{{ item.productId.title || 'Unknown Product' }}</h6>
+                            <span class="text-muted fs-7">Unit: ${{ item.priceAtTime }}</span>
+                          </div>
+                        </div>
+                      </td>
+
+                      <!-- Quantity Controls -->
+                      <td style="background: transparent;" class="text-center">
+                        <div class="d-inline-flex align-items-center glass-panel px-2 py-1 rounded-pill">
+                          <button class="btn btn-link text-light p-1 border-0" 
+                                  [disabled]="loading"
+                                  (click)="updateQuantity(item.productId._id, item.quantity, -1)">
+                            <i class="fs-5">-</i>
+                          </button>
+                          <span class="px-3 fw-bold text-light">{{ item.quantity }}</span>
+                          <button class="btn btn-link text-light p-1 border-0" 
+                                  [disabled]="loading"
+                                  (click)="updateQuantity(item.productId._id, item.quantity, 1)">
+                            <i class="fs-5">+</i>
+                          </button>
+                        </div>
+                      </td>
+
+                      <!-- Unit Price -->
+                      <td style="background: transparent;" class="text-end fw-medium text-light">
+                        ${{ item.priceAtTime }}
+                      </td>
+
+                      <!-- Subtotal -->
+                      <td style="background: transparent;" class="text-end fw-bold text-gradient">
+                        ${{ item.priceAtTime * item.quantity }}
+                      </td>
+
+                      <!-- Actions -->
+                      <td style="background: transparent;" class="text-center">
+                        <button class="btn btn-sm btn-link text-danger border-0" 
+                                [disabled]="loading"
+                                (click)="removeItem(item.productId._id)">
+                          Remove
+                        </button>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cart Summary Panel -->
+        <div class="col-lg-4">
+          <div class="card glass-panel border-0 p-4 rounded-4 sticky-lg-top" style="top: 100px;">
+            <h3 class="fw-bold text-light mb-4 pb-3 border-bottom border-purple-muted">Summary</h3>
+            
+            <div class="d-flex justify-content-between mb-3">
+              <span class="text-muted">Subtotal (Items)</span>
+              <span class="text-light fw-medium">{{ cart.itemCount }} items</span>
+            </div>
+
+            <div class="d-flex justify-content-between mb-4">
+              <span class="text-muted">Shipping</span>
+              <span class="text-success fw-medium">FREE</span>
+            </div>
+
+            <hr class="border-purple-muted mb-4">
+
+            <div class="d-flex justify-content-between align-items-center mb-5">
+              <span class="fs-5 fw-bold text-light">Estimated Total</span>
+              <span class="fs-4 fw-extrabold text-gradient">${{ cart.totalPrice }}</span>
+            </div>
+
+            <button class="btn btn-premium-primary w-100 rounded-pill py-3 fw-semibold mb-3">
+              Proceed to Checkout
+            </button>
+            <a routerLink="/products" class="btn btn-premium-secondary w-100 rounded-pill py-3 fw-semibold">
+              Continue Shopping
+            </a>
+          </div>
+        </div>
+      </div>
+    } @else {
+      <!-- Empty Cart View -->
+      <div class="text-center py-5">
+        <div class="glass-panel p-5 max-width-600 mx-auto rounded-4">
+          <h2 class="text-gradient fw-bold mb-3">Your Cart is Empty</h2>
+          <p class="text-muted fs-5 mb-5">Looks like you haven't added anything to your cart yet. Explore our collection of premium, curated products.</p>
+          <a routerLink="/products" class="btn btn-premium-primary rounded-pill px-5 py-3 fw-semibold">
+            Browse Products
+          </a>
+        </div>
+      </div>
+    }
+  }
+</div>

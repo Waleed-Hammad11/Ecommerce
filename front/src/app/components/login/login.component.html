@@ -1,24 +1,48 @@
-<div class="container vh-100 d-flex align-items-center justify-content-center">
-    <div class="card shadow-lg p-5 rounded-4"
-        style="width: 100%; max-width: 500px; background-color: #f8f9fa;">
-        <h3 class="text-center mb-4 text-primary">Login</h3>
+<div class="auth-wrapper">
+  <div class="card glass-panel p-5 rounded-4 border-0 w-100" style="max-width: 480px;">
+    <header class="text-center mb-4">
+      <h2 class="fw-bold text-gradient mb-2">Welcome Back</h2>
+      <p class="text-muted">Enter your details to access your account</p>
+    </header>
 
-        <form [formGroup]="loginForm" (ngSubmit)="sendData()">
+    <!-- Error Alerts -->
+    @if (errorMessage) {
+      <div class="glass-alert mb-4 d-flex justify-content-between align-items-center">
+        <span>{{ errorMessage }}</span>
+        <button class="btn-close btn-close-white" (click)="errorMessage = ''"></button>
+      </div>
+    }
 
-            <div class="mb-3">
-                <label for="email" class="form-label">Email address</label>
-                <input formControlName="email" type="email" class="form-control"
-                    id="email" placeholder="Enter email">
-            </div>
+    <form [formGroup]="loginForm" (ngSubmit)="sendData()">
+      <!-- Email -->
+      <div class="mb-3">
+        <label for="email" class="form-label fw-medium text-light opacity-75">Email Address</label>
+        <input formControlName="email" type="email" class="form-control glass-input"
+          id="email" placeholder="you@example.com">
+        @if (loginForm.get('email')?.touched && loginForm.get('email')?.invalid) {
+          <div class="text-danger fs-8 mt-1">Please enter a valid email address.</div>
+        }
+      </div>
 
-            <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input formControlName="password" type="password"
-                    class="form-control" id="password"
-                    placeholder="Enter password">
-            </div>
+      <!-- Password -->
+      <div class="mb-4">
+        <label for="password" class="form-label fw-medium text-light opacity-75">Password</label>
+        <input formControlName="password" type="password" class="form-control glass-input"
+          id="password" placeholder="••••••••">
+        @if (loginForm.get('password')?.touched && loginForm.get('password')?.invalid) {
+          <div class="text-danger fs-8 mt-1">Password is required.</div>
+        }
+      </div>
 
-            <button type="submit" class="btn btn-primary w-100">Login</button>
-        </form>
+      <button type="submit" class="btn btn-premium-primary w-100 rounded-pill py-3 fw-semibold" [disabled]="loading">
+        {{ loading ? 'Signing in...' : 'Login' }}
+      </button>
+    </form>
+
+    <div class="text-center mt-4">
+      <p class="mb-0 text-muted">Don't have an account? 
+        <a routerLink="/signup" class="text-gradient fw-semibold text-decoration-none">Sign up</a>
+      </p>
     </div>
+  </div>
 </div>
