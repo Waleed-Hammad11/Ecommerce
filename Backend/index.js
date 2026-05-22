@@ -1,29 +1,54 @@
-import express from "express";
-import { dbConnection } from "./db/db.connection.js";
-import { userRoutes } from "./src/modules/user/user.routes.js";
-import { adminRoutes } from "./src/modules/admin/admin.routes.js";
-import { userProductRoutes } from "./src/modules/products/product.routes.user.js";
-import { adminProductRoutes } from "./src/modules/products/product.routes.admin.js";
-import { userCartRoutes } from "./src/modules/cart/cart.routes.user.js";
-import { adminCartRoutes } from "./src/modules/cart/cart.routes.admin.js";
-import cors from "cors"
+import 'dotenv/config';
+import { env } from './src/config/env.js';
+import { connectDB, disconnectDB } from './src/config/db.js';
+import { logger } from './src/utils/logger.js';
+import app from './src/app.js';
 
-dbConnection
+const startServer = async () => {
+  try {
+    await connectDB(env.mongoUri);
 
-const app = express()
-app.use(cors());
+    const server = app.listen(env.port, () => {
+      logger.info(`Server running on http://localhost:${env.port}`);
+      logger.info(`Environment: ${env.nodeEnv}`);
+      logger.info(`Health check: http://localhost:${env.port}/api/v1/health`);
+    });
 
-app.use(express.json());
+    // Graceful Shutdown
+    const shutdown = (signal) => {
+      logger.info(`\n${signal} received. Starting graceful shutdown...`);
 
-app.use("/admin", adminRoutes);
-app.use("/admin/products", adminProductRoutes);
-app.use("/admin/cart", adminCartRoutes);
-app.use("/admin", express.static("uploads"),adminProductRoutes);
+      server.close(async () => {
+        logger.info('HTTP server closed.');
+        await disconnectDB();
+        logger.info('Shutdown complete. Goodbye!');
+        process.exit(0);
+      });
 
-app.use("/user", userRoutes);
-app.use("/user/products", userProductRoutes);
-app.use("/user/cart", userCartRoutes);
+      setTimeout(() => {
+        logger.error('Graceful shutdown timed out. Forcing exit.');
+        process.exit(1);
+      }, 10000);
+    };
 
-app.listen(3000, () => {
-console.log("Server running on http://localhost:3000");
-});
+    process.on('SIGTERM', () => shutdown('SIGTERM'));
+    process.on('SIGINT', () => shutdown('SIGINT'));
+
+    process.on('unhandledRejection', (reason) => {
+      logger.error('Unhandled Promise Rejection:', reason);
+      if (env.isProd) {
+        shutdown('unhandledRejection');
+      }
+    });
+
+    process.on('uncaughtException', (err) => {
+      logger.error('Uncaught Exception:', err);
+      shutdown('uncaughtException');
+    });
+  } catch (err) {
+    logger.error('Failed to start server:', err.message);
+    process.exit(1);
+  }
+};
+
+startServer();
